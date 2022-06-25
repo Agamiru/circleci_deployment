@@ -10,7 +10,7 @@ jobs:
           name: "save hello-world to file"
           command: |
             echo "hello world" > output.txt 
-      - persist-to-workspace:
+      - persist_to_workspace:
           root: /tmp/dir
           path:
             - output.txt
@@ -22,7 +22,6 @@ jobs:
       - checkout
       - attach_workspace:
           at: /tmp/dir
-
       - run:
           name: "concatenate hello world from file"
           command: |
