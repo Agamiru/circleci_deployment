@@ -1,17 +1,37 @@
 version: 2.1
 
-workflows:
-  test-env-vars:
-    jobs:
-      - build
-
 jobs:
-  build:
+  save-hello-world-output:
     docker:
       - image: cimg/base:2020.01
     steps:
       - checkout
       - run:
-          name: "echo an env var that is part of our project"
+          name: "save hello-world to file"
           command: |
-            echo My name is: $MY_NAME 
+            echo "hello world" > output.txt 
+      - persist-to-workspace:
+          root: /tmp/dir
+          path:
+            - output.txt
+
+  print-output-file:
+    docker:
+      - image: cimg/base:2020.01
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp/dir
+
+      - run:
+          name: "concatenate hello world from file"
+          command: |
+            cat output.txt
+
+workflows:
+  test-env-vars:
+    jobs:
+      - save-hello-world-output
+      - print-output-file:
+          requires:
+            - save-hello-world-output
